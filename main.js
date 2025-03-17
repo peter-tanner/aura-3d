@@ -19,8 +19,8 @@ function init() {
     0.1,
     1000
   );
-  camera.position.z = -10.5 * Math.SQRT1_2;
-  camera.position.x = 10.5 * Math.SQRT1_2;
+  camera.position.z = -9.5 * Math.SQRT1_2;
+  camera.position.x = 9.5 * Math.SQRT1_2;
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -32,23 +32,36 @@ function init() {
   dracoLoader.setDecoderPath("https://www.gstatic.com/draco/v1/decoders/");
   loader.setDRACOLoader(dracoLoader);
 
-  loader.load("neptunium_web.draco.gltf", function (gltf) {
+  loader.load("AURA_web.glb", function (gltf) {
     model = gltf.scene;
-    model.position.set(0, 0.25, 0);
-    //   model.rotateY(Math.PI);
-    //   model.rotateX(Math.PI);
+    model.rotateY(-Math.PI / 2);
     model.rotateZ(-Math.PI / 2);
-    model.scale.set(100, 100, 100);
     scene.add(model);
     hideLoadingOverlay();
   });
 
-  var global_illumination = new THREE.AmbientLight(0xffffff, 1);
+  var global_illumination = new THREE.AmbientLight(0xeaf0e7, 0.1);
   scene.add(global_illumination);
+
+  var sunlight1 = new THREE.DirectionalLight(0xeaf0e7, 1.2);
+  sunlight1.position.set(5, 10, 5);
+  sunlight1.target.position.set(0, 0, 0);
+  sunlight1.castShadow = true;
+  scene.add(sunlight1);
+
+  var sunlight2 = new THREE.DirectionalLight(0xeaf0e7, 1.2);
+  sunlight2.position.set(-5, 10, -5);
+  sunlight2.target.position.set(0, 0, 0);
+  sunlight2.castShadow = true;
+  scene.add(sunlight2);
+
+  // const light = new THREE.PointLight(0xff0000, 100, 100, 5);
+  // light.position.set(-2, -2, 2);
+  // scene.add(light);
 
   controls = new OrbitControls(camera, renderer.domElement);
   controls.autoRotate = true;
-  controls.autoRotateSpeed = 2;
+  controls.autoRotateSpeed = 1.5;
 
   renderer.setClearColor(0x000000, 1);
   window.addEventListener("resize", onWindowResize, false);
@@ -84,8 +97,8 @@ function showLoadingOverlay() {
 }
 
 function hideLoadingOverlay() {
+  controls.reset();
   document.getElementById("loadingOverlay").classList.add("fade-out");
-
   setTimeout(() => {
     document.getElementById("loadingOverlay").style.display = "none";
   }, 1000);
